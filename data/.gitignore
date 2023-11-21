@@ -1,0 +1,4 @@
+*.csv
+chroma/
+*.pkl.gz
+*.index
