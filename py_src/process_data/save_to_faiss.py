@@ -5,7 +5,7 @@ import gzip
 import faiss
 import time
 
-from ..shared.data import faiss_index_path, docs_flat_path, faiss_index_to_docs_flat_path, faiss_sentence_embeddings_path
+from shared.data import faiss_index_path, docs_flat_path, faiss_index_to_docs_flat_path, faiss_sentence_embeddings_path
 from .generate_data_collections import docs_pickle_path, sentence_embeddings_pickle_path
 
 with gzip.open(docs_pickle_path, 'rb') as f:
@@ -13,6 +13,8 @@ with gzip.open(docs_pickle_path, 'rb') as f:
 
 with gzip.open(sentence_embeddings_pickle_path, 'rb') as f:
     sentence_embeddings = pickle.load(f)
+
+print('Loaded data')
 
 doc_keys = list(docs.keys())
 

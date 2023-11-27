@@ -37,3 +37,9 @@ The script also illstrates usage of a user text query as a search string to quer
 ```
 docker run -d -p 8983:8983 --name isss_solr -v "$(pwd)/solr/config:/isss_core_config/conf" solr solr-precreate isss_core /isss_core_config
 ```
+
+### Solr MoreLikeThis Query example
+
+```
+http://localhost:8983/solr/isss_core/mlt?q=id%3A157803&mlt.fl=text&mlt.mindf=0&mlt.mintf=0&fl=score,doc_id,text,id&rows=100
+```
