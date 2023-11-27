@@ -2,7 +2,7 @@ import pickle
 import gzip
 import faiss
 import numpy as np
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Union
 from .models import Document, Sentence
 from sentence_transformers import SentenceTransformer
 model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -45,6 +45,25 @@ class AppData:
                 s.text = sentence['text']
                 doc.sentences.append(s)
             self.docs[doc_id] = doc
+
+    def get_doc(self, doc_id: str) -> Union[Document, None]:
+        if doc_id not in self.docs:
+            return None
+        return self.docs[doc_id].copy()
+    
+    def get_sentence(self, sentence_id: int) -> Sentence:
+        doc_id = self.faiss_index_to_docs_flat[sentence_id]
+        doc = self.docs[doc_id]
+        for sentence in doc.sentences:
+            if sentence.id == sentence_id:
+                return sentence.copy()
+        return None
+    
+    def get_docs(self, skip: int = 0, take: int = 100) -> List[Document]:
+        return [self.docs[doc_id].copy() for doc_id in list(self.docs.keys())[skip:skip+take]]
+    
+    def get_docs_by_ids(self, doc_ids: List[str]) -> List[Document]:
+        return [self.docs[doc_id].copy() for doc_id in doc_ids]
     
 class SimilarityService:
     instance = None
@@ -57,7 +76,7 @@ class SimilarityService:
 
     app_data: AppData = AppData.get_instance()
 
-    def compare_document_sentences(self, ref_doc_id: int, other_doc_id: int) -> Document:
+    def compare_document_sentences(self, ref_doc_id: str, other_doc_id: str) -> List[List[float]]:
         ref_doc = self.app_data.docs[ref_doc_id].copy()
         other_doc = self.app_data.docs[other_doc_id].copy()
         ref_sentence_ids = [s.id for s in ref_doc.sentences]
@@ -66,18 +85,15 @@ class SimilarityService:
         other_sentence_embeddings = [self.app_data.faiss_sentence_embeddings[s_id] for s_id in other_sentence_ids]
         cross_similarities = [
             [
-                np.dot(ref_sentence_embedding, other_sentence_embedding) 
-                for ref_sentence_embedding in ref_sentence_embeddings
+                np.dot(ref_sentence_embedding, other_sentence_embedding).item() 
+                for other_sentence_embedding in other_sentence_embeddings
             ] 
-            for other_sentence_embedding in other_sentence_embeddings
+            for ref_sentence_embedding in ref_sentence_embeddings
         ]
 
-        for i, cross_similarity in enumerate(cross_similarities):
-            other_doc.sentences[i].ref_similarities = cross_similarity
-
-        return other_doc
+        return cross_similarities
     
-    def find_similar_document_ids(self, ref_doc_id: int, k_nearest: int = 10000) -> List[Tuple[str, float]]:
+    def find_similar_document_ids(self, ref_doc_id: str, k_nearest: int = 10000, n_top: int = 10) -> List[Tuple[str, float]]:
         ref_doc = self.app_data.docs[ref_doc_id].copy()
         ref_sentence_ids = [s.id for s in ref_doc.sentences]
         ref_sentence_embeddings = np.array([self.app_data.faiss_sentence_embeddings[s_id] for s_id in ref_sentence_ids])
@@ -104,8 +120,12 @@ class SimilarityService:
                 neighbor_doc_sums[neighbor_doc_id] += matches[i][neighbor_doc_id]
 
         results = sorted(neighbor_doc_sums.items(), key=lambda x: x[1], reverse=True)
-        return results
+        return results[:n_top]
     
+    def find_similar_documents(self, ref_doc_id: int, k_nearest: int = 10000) -> List[Tuple[Document, float]]:
+        results = self.find_similar_document_ids(ref_doc_id, k_nearest)
+        return [(self.app_data.docs[doc_id].copy(), similarity) for doc_id, similarity in results]
+
     def find_similar_documents_by_text_query(self, text_query: str, k_nearest: int = 1000) -> List[int]:
         query_embedding = model.encode(text_query)
         D, I = self.app_data.faiss_index.search(np.array([query_embedding]), k_nearest)

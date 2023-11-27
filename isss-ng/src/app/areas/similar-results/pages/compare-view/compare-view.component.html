@@ -1,0 +1,43 @@
+<div style="display: flex">
+  <div>Similar Results</div>
+  <div style="flex-grow: 1;"></div>
+  <div>
+    <p-button (click)="showRefinementsSidebar = true">Show Refinements</p-button>
+  </div>
+</div>
+<div style="display: flex; height: 100%">
+  <div [style]="{'min-width': '40%'}">
+    <p-panel header="Reference Text">
+      <app-segmented-text *ngIf="referenceDocument" [segmentedDocument]="referenceDocument" (onSentenceHover)="handleSentenceHover($event)"/>
+    </p-panel>
+  </div>
+  <div [style]="{'min-width': '20%'}">
+    <p-panel header="Similar Results" [style]="{'height': '100%'}">
+      <p-scroller [items]="similarDocuments" [itemSize]="200" scrollHeight="800px" styleClass="border-1 surface-border" [style]="{'width': '18vw'}">
+        <ng-template pTemplate="item" let-item let-options="options">
+          <div style="margin-bottom: 4px;" (click)="onSimilarResultClick(item.doc)">
+            <app-document-list-item [document]="item.doc" [score]="item.similarity"/>
+          </div>
+        </ng-template>
+      </p-scroller>
+    </p-panel>
+  </div>
+  <div [style]="{'min-width': '40%'}">
+    <p-panel [header]="selectedSimilarDocument?.id">
+      <app-segmented-text
+        *ngIf="selectedSimilarDocument"
+        [segmentedDocument]="selectedSimilarDocument"
+        [isReference]="false"
+        [similarityMatrix]="similarityMatrix"
+        #otherDocument
+      />
+    </p-panel>
+  </div>
+</div>
+<p-sidebar [(visible)]="showRefinementsSidebar" position="right">
+  <h3>Sidebar</h3>
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  </p>
+</p-sidebar>

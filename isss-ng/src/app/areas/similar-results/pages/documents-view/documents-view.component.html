@@ -1,0 +1,9 @@
+<h3>Documents</h3>
+
+<p-paginator (onPageChange)="onPageChange($event)" [first]="first" [rows]="rows" [totalRecords]="120" [rowsPerPageOptions]="[10, 20, 30]"></p-paginator>
+
+<div>
+  <a *ngFor="let doc of results" [routerLink]="['/find-similar-to', doc.id]" class="card-link" [style]="{'max-width': '350px', 'margin': '4px 0', 'max-height': '200px'}">
+    <app-document-list-item  [document]="doc"/>
+  </a>
+</div>

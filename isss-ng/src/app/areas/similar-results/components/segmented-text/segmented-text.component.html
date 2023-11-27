@@ -1,0 +1,9 @@
+<div>
+  <app-segmented-paragraph *ngFor="let paragraph of segmentedDocument.paragraphs"
+                           [segmentedParagraph]="paragraph"
+                           (onSentenceHover)="handleSentenceHover($event)"
+                           [isReference]="isReference"
+                           [similarityMatrix]="similarityMatrix"
+                           #paragraphs
+  />
+</div>

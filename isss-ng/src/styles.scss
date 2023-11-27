@@ -1,0 +1,61 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~primeng/resources/themes/lara-light-blue/theme.css";
+@import "~primeng/resources/primeng.css";
+@import "~primeicons/primeicons.css";
+
+.text-segment:hover {
+  background-color: #ddd;
+  box-shadow: 0 0 0 4px #ddd;
+}
+.router-container {
+  height: calc(100vh - 50px);
+}
+
+
+.sentence:hover {
+  background-color: #ddd;
+  box-shadow: 0 0 0 2px #ddd;
+}
+
+.sentence-similarity-p3 {
+  background-color: #9cd99c;
+}
+
+.sentence-similarity-p2 {
+  background-color: #9cd99c7d;
+}
+
+.sentence-similarity-p1 {
+  background-color: #9cd99c29;
+}
+
+.sentence-similarity-m1 {
+  background-color: #e7a8a838;
+}
+
+.sentence-similarity-m2 {
+  background-color: #e7a8a88f;
+}
+
+.sentence-similarity-m3 {
+  background-color: #e7a8a8;
+}
+
+.p-card .p-card-content {
+  padding: 4px 0;
+  max-height: 100px;
+  overflow-y: hidden;
+}
+
+.limit-lines-4 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+}
+
+.card-link {
+  text-decoration: none;
+  display: block;
+}
